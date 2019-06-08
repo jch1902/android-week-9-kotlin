@@ -1,5 +1,6 @@
 package com.ucsdextandroid1.kotlinlist
 
+import android.graphics.Color
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.*
@@ -27,7 +28,10 @@ class KotlinUnitTest {
      * example 2: named arguments
      * Using named arguments join the string with a " " separator and a ! postfix
      */
-    private fun joinOptions(options: Collection<String>) = options.joinToString(TODO())
+    private fun joinOptions(options: Collection<String>) = options.joinToString(
+            separator = " ",
+            postfix = "!"
+    )
 
     @Test
     fun example_2_test() {
@@ -59,12 +63,14 @@ class KotlinUnitTest {
      *
      * collection.any(item -> { return item % 2 == 0; });
      */
-    private fun containsAnyEvenNumbers(collection: Collection<Int>): Boolean = collection.any { TODO() }
+    private fun containsAnyEvenNumbers(collection: Collection<Int>): Boolean = collection.any {value: Int ->
+        return@any value % 2 == 0
+    }
 
     @Test
     fun example_4_test() {
-        assertEquals(true, listOf(2, 4, 6))
-        assertEquals(false, listOf(1, 3, 5, 7))
+        assertEquals(true, containsAnyEvenNumbers(listOf(2, 4, 6)))
+        assertEquals(false, containsAnyEvenNumbers(listOf(1, 3, 5, 7)))
     }
 
     /**
@@ -94,20 +100,20 @@ class KotlinUnitTest {
      *      }
      * }
      */
-    class Person //TODO
+    class Person(val name: String, var age: Int) //TODO
 
     @Test
     fun example_5_test() {
         //TODO uncomment this code to test
-//        val person = Person("rj", 26)
-//
-//        assertEquals("rj", person.name)
-//        assertEquals(26, person.age)
-//
-//        assertEquals(Person("rj", 26), person)
-//
-//        person.age = 27
-//        assertEquals(27, person.age)
+        val person = Person("rj", 26)
+
+        assertEquals("rj", person.name)
+        assertEquals(26, person.age)
+
+        assertEquals(Person("rj", 26), person)
+
+        person.age = 27
+        assertEquals(27, person.age)
     }
 
     class School(val classroom: Classroom?)
@@ -128,7 +134,7 @@ class KotlinUnitTest {
      *
      */
     private fun getAllStudentNames(school: School?): List<String> {
-        return TODO()
+        return school?.classroom?.students?.map {it.name} ?: emptyList()
     }
 
     @Test
@@ -165,7 +171,8 @@ class KotlinUnitTest {
 
     private fun getNameOrSpecies(animalOrHuman: Any): String {
         return when(animalOrHuman) {
-            is Animal -> TODO()
+            is Animal -> animalOrHuman.species
+            is Human -> animalOrHuman.name
             // add human case
             else -> throw IllegalArgumentException("Unknown")
         }
@@ -194,7 +201,12 @@ class KotlinUnitTest {
      */
 
     private fun Random.toRandomColor(): Int {
-        TODO()
+        return Color.argb(
+                255,
+                nextInt(256),
+                nextInt(256),
+                nextInt(256)
+        )
     }
 
     @Test
@@ -223,7 +235,12 @@ class KotlinUnitTest {
 
     fun getSortedListWithObjectNotation(item1: Int, item2: Int, item3: Int): List<Int> {
         val arrayList = listOf(item1, item2, item3)
-        Collections.sort(arrayList, TODO())
+        Collections.sort(arrayList, object: Comparator<Int>{
+            override fun compare(x: Int, y: Int): Int {
+                return y - x
+            }
+
+        })
         return arrayList
     }
 
@@ -240,7 +257,9 @@ class KotlinUnitTest {
      */
     fun getSortedListWithLambdaNotation(item1: Int, item2: Int, item3: Int): List<Int> {
         val arrayList = listOf(item1, item2, item3)
-        Collections.sort(arrayList, TODO())
+        Collections.sort(arrayList) {x: Int, y: Int ->
+            return@sort y - x
+        }
         return arrayList
     }
 
@@ -254,13 +273,17 @@ class KotlinUnitTest {
     class PropertyDemo {
         private var _counter = 0
 
-        val count: Int get() = TODO()
+        val count: Int get() = _counter
 
         var propertyWithCounter: String? = null
             set(property) {
                 field = property
-                TODO("iterate counter")
+                    _counter += 1
+                    propertyWithCounter = propertyWithCounter
             }
+
+        val countWithProperty: String get() = "$propertyWithCounter $count"
+
     }
 
     @Test
